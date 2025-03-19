@@ -1,30 +1,44 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
+  Patch,
   Post,
-  Res,
+  Query,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { CoffeesService } from './coffees.service';
 
 @Controller('coffees')
 export class CoffeesController {
+  constructor(private readonly coffeesService: CoffeesService) {}
+
   @Get()
-  findAll(@Res() response: Response) {
-    response.status(200).send('all the coffees');
+  findAll(@Query() paginationQuery) {
+    // const {limit, offset} = paginationQuery;
+    return this.coffeesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return `coffee: ${id} found`;
+  findOne(@Param('id') id: number) {
+    return this.coffeesService.findOne(id);
   }
 
   @Post()
-  @HttpCode(HttpStatus.GONE)
   create(@Body() body: any) {
-    return body;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.coffeesService.create(body);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: number, @Body() body: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.coffeesService.update(id, body);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: number) {
+    this.coffeesService.remove(id);
   }
 }
